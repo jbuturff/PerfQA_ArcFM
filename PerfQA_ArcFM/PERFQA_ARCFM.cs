@@ -42,6 +42,8 @@ namespace PerfQA_ArcFM
         private System.Diagnostics.Stopwatch SW1;
         private System.Diagnostics.Stopwatch StepSW;
 
+        private bool bDebug;
+
         /// <summary>
         /// Get or set the Logger used to report results or errors. 
         /// Custom ScriptCommands can use the Logger's WriteLine method to log output. 
@@ -72,6 +74,9 @@ namespace PerfQA_ArcFM
             SW1 = new System.Diagnostics.Stopwatch();
             pSC = new ScriptEngine();
             StepSW = new System.Diagnostics.Stopwatch();
+
+            bDebug = false;
+
         }
 
         /// <summary>
@@ -98,9 +103,18 @@ namespace PerfQA_ArcFM
             {
                 sCommandLine = "";
             }
-            //this.Logger.WriteLine(sCommandLine);
-            switch (verb.Trim())
+            DebugWrite(sCommandLine);
+            switch (verb.Trim().ToUpper())
             {
+                // Let's set DEBUG on or off
+                case "DEBUGON":
+                    this.bDebug = true;
+                    return 3;
+                case "DEBUGOFF":
+                    this.bDebug = false;
+                    return 3;
+
+
                 case "FORCETIMESTAMP":
                     this.Logger.LogTimeStamp = true;
                     return 3;
@@ -126,9 +140,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example: OPENSTOREDDISPLAY Stored Display Name,SYSTEM");
-                        this.Logger.WriteLine("Example: OPENSTOREDDISPLAY Stored Display Name,USER");
+                        this.Logger.WriteLine("OPENSTOREDDISPLAY :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage: OPENSTOREDDISPLAY <sStoredDisplayName>,<SYSTEM | USER>");
                         return 2;
                     }
                     else
@@ -152,9 +165,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example: OPENPAGETEMPLATE Stored Display Name,SYSTEM");
-                        this.Logger.WriteLine("Example: OPENPAGETEMPLATE Stored Display Name,USER");
+                        this.Logger.WriteLine("OPENPAGETEMPLATE :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage: OPENPAGETEMPLATE <sName>,<SYSTEM | USER>");
                         return 2;
                     }
                     else
@@ -180,8 +192,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:");
+                        this.Logger.WriteLine("TRACEUPSTREAM :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage: TRACEUPSTREAM <OBJECTID> <TRUE|FALSE>");
                     }
                     else
                     {
@@ -199,9 +211,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:TRACEDOWNSTREAM OBJECTID,TRUE");
-                        this.Logger.WriteLine("Example:TRACEDOWNSTREAM OBJECTID,FALSE");
+                        this.Logger.WriteLine("TRACEDOWNSTREAM :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  TRACEDOWNSTREAM <OBJECTID>, <TRUE|FALSE>");
                     }
                     else
                     {
@@ -219,9 +230,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:TRACEISOLATION OBJECTID,TRUE");
-                        this.Logger.WriteLine("Example:TRACEISOLATION OBJECTID,FALSE");
+                        this.Logger.WriteLine("TRACEISOLATING :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  TRACEISOLATING <OBJECTID>, <TRUE|FALSE>");
                     }
                     else
                     {
@@ -259,8 +269,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:OPEN_ARCFM_SESSION SESSION_name,ODBC_CONNECTION_STRING");
+                        this.Logger.WriteLine("OPEN_ARCFM_SESSION :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  OPEN_ARCFM_SESSION <SESSION_name>, <ODBC_CONNECTION_STRING>");
                     }
                     else
                     {
@@ -277,9 +287,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:CLOSE_ARCFM_SESSION ODBC_CONNECTION_STRING,TRUE");
-                        this.Logger.WriteLine("Example:CLOSE_ARCFM_SESSION ODBC_CONNECTION_STRING,FALSE");
+                        this.Logger.WriteLine("CLOSE_ARCFM_SESSION :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  CLOSE_ARCFM_SESSION <ODBC_CONNECTION_STRING> , <TRUE | FALSE>");
                     }
                     else
                     {
@@ -295,8 +304,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 1)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:CREATE_ARCFM_SESSION ODBC_CONNECTION_STRING");
+                        this.Logger.WriteLine("CREATE_ARCFM_SESSION :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  CREATE_ARCFM_SESSION  <ODBC_CONNECTION_STRING>");
                     }
                     else
                     {
@@ -315,8 +324,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 3)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:ARCFMZOOMTO X,Y,SCALE *SCALE is a whole number");
+                        this.Logger.WriteLine("ARCFMZOOMTO :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  ARCFMZOOMTO  <SCALE>, <X>, <Y>   *SCALE is a whole number");
                     }
                     else
                     {
@@ -327,12 +336,12 @@ namespace PerfQA_ArcFM
                 // Execute ArcFM Gas Trace
                 // 1 - Trace Type ("ISO")
                 //
-                case "ARCFMGasTrace":
+                case "ARCFMGASTRACE":
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 1)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:ARCFMGasTrace ISO");
+                        this.Logger.WriteLine("ARCFMGASTRACE :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  ARCFMGasTrace <TYPE>");
                     }
                     else
                     {
@@ -348,8 +357,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:SEARCHBYATTRIBUTE Class Name,Where_Clause");
+                        this.Logger.WriteLine("SEARCHBYATTRIBUTE :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  SEARCHBYATTRIBUTE <ClassName>, <Where_Clause>");
                     }
                     else
                     {
@@ -365,8 +374,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:SELECTLAYERBYATTRIBUTE LAYER_NAME,Where_Clause");
+                        this.Logger.WriteLine("SELECTLAYERBYATTRIBUTE :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  SELECTLAYERBYATTRIBUTE <LAYER_NAME> , <Where_Clause>");
                     }
                     else
                     {
@@ -382,8 +391,8 @@ namespace PerfQA_ArcFM
                     //   2 - Envelope                    
                     if (lstArgs.Count() != 5)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:SELECTFEATURES CLASS_NAME,WHERE_CLAUSE");
+                        this.Logger.WriteLine("SELECTFEATURES :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  SELECTFEATURES <CLASS_NAME> , <WHERE_CLAUSE>");
                     }
                     else
                     {
@@ -402,8 +411,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 6)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:SPATIALATTRIBUTESELECT LAYER_NAME,Query_Where_Clause,MinX,MinY,MaxX,MaxY");
+                        this.Logger.WriteLine("SPATIALATTRIBUTESELECT :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage: SPATIALATTRIBUTESELECT <LAYER_NAME> , <Where_Clause> , <MinX> , <MinY> , <MaxX> , <MaxY>");
                     }
                     else
                     {
@@ -416,8 +425,10 @@ namespace PerfQA_ArcFM
                 // 2 - MinY
                 // 3 - MaxX
                 // 4 - MaxY
-                //
+                // 
+                // Usage:  MAPSPATIALSELECT [xMin] , [yMin] , [xMax] , [yMax]
                 case "MAPSPATIALSELECT":
+
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() == 4)
                     {
@@ -425,21 +436,12 @@ namespace PerfQA_ArcFM
                     }
                     else
                     {
-                        //if (lstArgs.Count() == 0)
-                        //{
-                            IMxDocument pMXDoc = GetDoc();
-                            IEnvelope pEnv = pMXDoc.ActiveView.Extent;
-                            string sXmin = Convert.ToString(pEnv.XMin);
-                            string sYmin = Convert.ToString(pEnv.YMin);
-                            string sXmax = Convert.ToString(pEnv.XMax);
-                            string sYmax = Convert.ToString(pEnv.YMax);
-                            MapSpatialSelect(sXmin, sYmin, sXmax, sYmax);
-                        //}
-                        //else
-                        //{
-                          //  this.Logger.WriteLine("Invalid number of parameters");
-                          //  this.Logger.WriteLine("Example:MAPSPATIALSELECT MinX,MinY,MaxX,MaxY");
-                        //}
+                        IMxDocument pMXDoc = GetDoc();
+                        IEnvelope pEnv = pMXDoc.ActiveView.Extent;
+                        string sXmin = Convert.ToString(pEnv.XMin);
+                        string sYmin = Convert.ToString(pEnv.YMin);
+                        string sXmax = Convert.ToString(pEnv.XMax);
+                        string sYmax = Convert.ToString(pEnv.YMax);
                     }
                     return 3;
                 // 
@@ -467,8 +469,8 @@ namespace PerfQA_ArcFM
                     if (lstGroups.Count() != 3)
                     {
                         lstArgs = GetParameters(sCommandLine);
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:UPDATE_ATTRUBUTE Class_Name;where_clause;Column_Name,Value  *can have multiple pairs of column_name and value");
+                        this.Logger.WriteLine("UPDATE_ATTRIBUTE :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage: UPDATE_ATTRUBUTE <Class_Name>; <where_clause>;  <Column_Name,Value>  *can have multiple pairs of column_name and value");
                     }
                     else
                     {
@@ -483,8 +485,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 1)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:SETSCALE 1000");
+                        this.Logger.WriteLine("SETSCALE :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  SETSCALE <scale>");
                     }
                     else
                     {
@@ -499,8 +501,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 1)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:COMMANDBUTTON GUID");
+                        this.Logger.WriteLine("COMMANDBUTTON :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage: COMMANDBUTTON <GUID>");
                     }
                     else
                     {
@@ -524,9 +526,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:CREATEVERSION Version_Name,TRUE");
-                        this.Logger.WriteLine("Example:CREATEVERSION Version_Name,FALSE");
+                        this.Logger.WriteLine("CREATEVERSION :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  CREATEVERSION <Version_Name>, <TRUE | FALSE>");
                     }
                     else
                     {
@@ -537,8 +538,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 1)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:CHANGEVERSION VERSION_NAME");
+                        this.Logger.WriteLine("CHANGEVERSION :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  CHANGEVERSION <VERSION_NAME>");
                     }
                     else
                     {
@@ -561,9 +562,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:SETLAYERVISIBILITY Layer_Name,ON");
-                        this.Logger.WriteLine("Example:SETLAYERVISIBILITY Layer_Name,OFF");
+                        this.Logger.WriteLine("SETLAYERVISIBILITY :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  SETLAYERVISIBILITY <Layer_Name> , <ON | OFF>");
                     }
                     else
                     {
@@ -600,8 +600,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:PLACEFLAG FeatureClassName,ObjectID");
+                        this.Logger.WriteLine("PLACEFLAG :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  PLACEFLAG <FeatureClassName> , <ObjectID>");
                     }
                     else
                     {
@@ -617,8 +617,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:PLACEBARRIER FeatureClassName,ObjectID");
+                        this.Logger.WriteLine("PLACEBARRIER :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  PLACEBARRIER <FeatureClassName> , <ObjectID>");
                     }
                     else
                     {
@@ -631,14 +631,19 @@ namespace PerfQA_ArcFM
                 // 2 - Do Trace
                 case "EXECUTENETWORKTRACE":
                     lstArgs = GetParameters(sCommandLine);
-                    if (lstArgs.Count() != 2)
+                    if (lstArgs.Count() == 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:EXECUTENETWORKTRACE Trace_Name,???");
+                        this.Logger.WriteLine("ExecuteNetworkTrace only takes 1 argument.  Ignoring " + lstArgs[1]);
+                        ExecuteNetworkTrace(lstArgs[0]);
+                    }
+                    else if (lstArgs.Count() == 1)
+                    {
+                        ExecuteNetworkTrace(lstArgs[0]);
                     }
                     else
                     {
-                        ExecuteNetworkTrace(lstArgs[0], lstArgs[1]);
+                        this.Logger.WriteLine("EXECUTENETWORKTRACE :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  EXECUTENETWORKTRACE  <Trace_Name>");
                     }
                     return 3;
                 //
@@ -650,9 +655,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:SETLAYERSELECTABLE Layer_Name,ON");
-                        this.Logger.WriteLine("Example:SETLAYERSELECTABLE Layer_Name,OFF");
+                        this.Logger.WriteLine("SETLAYERSELECTABLE :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  SETLAYERSELECTABLE <Layer_Name> , <ON | OFF>");
                     }
                     else
                     {
@@ -668,8 +672,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:");
+                        this.Logger.WriteLine("ADDTOLAYERSELECTION :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  ADDTOLAYERSELECTION <LAYER_NAME> , <OBJECTID>");
                     }
                     else
                     {
@@ -685,12 +689,12 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:");
+                        this.Logger.WriteLine("REMOVEFROMLAYERSELECTION :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  REMOVEFROMLAYERSELECTION  <LAYER_NAME> , <OBJECTID>");
                     }
                     else
                     {
-                        RemoveFromSelecdtion(lstArgs[0], lstArgs[1]);
+                        RemoveFromSelection(lstArgs[0], lstArgs[1]);
                     }
                     return 3;
                 //
@@ -708,8 +712,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 1)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:EDITWORKSPACE LAYER_NAME");
+                        this.Logger.WriteLine("EDITWORKSPACE :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  EDITWORKSPACE <LAYER_NAME>");
                     }
                     else
                     {
@@ -724,8 +728,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 1)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:");
+                        this.Logger.WriteLine("STOPEDITOR :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  STOPEDITOR  <save_edits>");
                     }
                     else
                     {
@@ -736,8 +740,8 @@ namespace PerfQA_ArcFM
                     lstGroups = GetParameterGroups(sCommandLine);
                     if (lstGroups.Count() != 3)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:");
+                        this.Logger.WriteLine("CREATEPOINT :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  CREATEPOINT <classname>; x,y; <vars>");
                     }
                     else
                     {
@@ -746,8 +750,8 @@ namespace PerfQA_ArcFM
                         lstValues = GetParameters(lstGroups[2]);
                         if (lstPoints.Count() != 2)
                         {
-                            this.Logger.WriteLine("Invalid number of coordindates");
-                            this.Logger.WriteLine("Example:");
+                            this.Logger.WriteLine("CREATEPOINT :: Invalid number of coordindates");
+                            this.Logger.WriteLine("Usage:  CREATEPOINT <classname>; x,y; <vars>");
                         }
                         else
                         {
@@ -759,8 +763,8 @@ namespace PerfQA_ArcFM
                     lstGroups = GetParameterGroups(sCommandLine);
                     if (lstGroups.Count() != 3)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:");
+                        this.Logger.WriteLine("CREATELINE :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  CREATELINE <classname>; <points>; <vars>");
                     }
                     else
                     {
@@ -774,8 +778,8 @@ namespace PerfQA_ArcFM
                     lstGroups = GetParameterGroups(sCommandLine);
                     if (lstGroups.Count() != 3)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:");
+                        this.Logger.WriteLine("CREATEPOLYGON :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  CREATEPOLYGON <classname>; <points>; <vars>");
                     }
                     else
                     {
@@ -784,6 +788,34 @@ namespace PerfQA_ArcFM
                         if (lstGroups.Length == 3) lstValues = GetParameters(lstGroups[2]);
                         CREATEPOLYGONFEATURE(lstGroups[0], lstGroups[1], lstGroups[2]);
                     }
+                    return 3;
+                case "CREATERELATEDRECORD":
+                    lstGroups = GetParameterGroups(sCommandLine);
+                    lstArgs = GetParameters(lstGroups[0]);
+                    if (lstGroups.Count() == 2)
+                    {
+                        CreateRelatedRecord(lstArgs[0], lstArgs[1], lstArgs[2], lstGroups[1]);
+                    }
+                    else 
+                    {
+                        this.Logger.WriteLine("CREATERELATEDRECORD :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  CREATERELATEDRECORD <OriginClassName>, <OriginObjectID>, <RelClassName>; <vars>");
+                    }
+
+                    return 3;
+                case "CREATERELATEDPOINT":
+                    lstGroups = GetParameterGroups(sCommandLine);
+                    lstArgs = GetParameters(lstGroups[0]);
+                    if (lstGroups.Count() == 3)
+                    {
+                        CreateRelatedPoint(lstArgs[0], lstArgs[1], lstArgs[2], lstGroups[1], lstGroups[2]);
+                    }
+                    else
+                    {
+                        this.Logger.WriteLine("CREATERELATEDPOINT :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  CREATERELATEDPOINT <OriginClassName>, <OriginObjectID>, <RelClassName>; <vars>; <x , y>");
+                    }
+
                     return 3;
                 //
                 // Execute Provided SQL Statement
@@ -809,8 +841,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 2)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:");
+                        this.Logger.WriteLine("PAN :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  PAN <sDirection> <sDistance>");
                     }
                     else
                     {
@@ -825,8 +857,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 1)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:");
+                        this.Logger.WriteLine("PRINT :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  PRINT <sFileName>");
                     }
                     else
                     {
@@ -841,8 +873,8 @@ namespace PerfQA_ArcFM
                     lstArgs = GetParameters(sCommandLine);
                     if (lstArgs.Count() != 1)
                     {
-                        this.Logger.WriteLine("Invalid number of parameters");
-                        this.Logger.WriteLine("Example:");
+                        this.Logger.WriteLine("WAKEUP_AT :: Invalid number of parameters");
+                        this.Logger.WriteLine("Usage:  WAKEUP_AT <time>");
                     }
                     else
                     {
@@ -924,7 +956,7 @@ namespace PerfQA_ArcFM
         {
             try
             {
-                this.Logger.WriteLine("OpenStoredDisplay:" + SDName);
+                DebugWrite("OpenStoredDisplay:" + SDName);
                 IMMStoredDisplayName pSDName;
                 IMMEnumStoredDisplayName pESD;
 
@@ -996,7 +1028,7 @@ namespace PerfQA_ArcFM
         {
             try
             {
-                this.Logger.WriteLine("OpenPageTemplate:" + SDName);
+                DebugWrite("OpenPageTemplate:" + SDName);
                
                 IMMPageTemplateName pPTName;
                 IMMEnumPageTemplateName pEPT;
@@ -1215,20 +1247,20 @@ namespace PerfQA_ArcFM
                 SW1.Reset();
                 SW1.Start();
                 pMMLogin = new MMLoginUtils();
-                Logger.WriteLine("Get LoginWorkspace");
+                DebugWrite("  Get LoginWorkspace");
                 pWKS = pMMLogin.LoginWorkspace;
                 Type t = Type.GetTypeFromProgID("esriFramework.AppRef");
                 System.Object obj = Activator.CreateInstance(t);
                 pApp = obj as IApplication;
                 pMXDoc = (IMxDocument)pApp.Document;
-                Logger.WriteLine("Find PX Framework");
+                DebugWrite("  Find PX Framework");
                 pExt = pApp.FindExtensionByName("Session Manager Integration Extension");
                 pmmSessionMangerIntegrationExt = (IMMPxIntegrationCache)pExt;
                 pPXApp = pmmSessionMangerIntegrationExt.Application;
                 pPxLogin = pPXApp.Login;
-                
-                
-                Logger.WriteLine("open Connection");
+
+
+                DebugWrite("  Open Connection");
                 if (pPxLogin == null)
                 {
                     if (sConnStr != "")
@@ -1250,14 +1282,14 @@ namespace PerfQA_ArcFM
                     pPXConnection = pPxLogin.Connection;
                 }
 
-                Logger.WriteLine("Start PX");
+                DebugWrite("  Start PX");
                 //pPXApp.Startup(pPxLogin);
                 pmmSessionMangerExt = (IMMSessionManager2)pPXApp.FindPxExtensionByName("MMSessionManager");
                 pMMSession = pmmSessionMangerExt.CreateSession();
                 pMMSessVer = (IMMSessionVersion)pMMSession;
 
                 pVersion = (IVersion)pWKS;
-                Logger.WriteLine("Create PX version");
+                DebugWrite("  Create PX version");
                 pNewVersion = pVersion.CreateVersion(pMMSessVer.get_Name());
 
                 //pCV = new ChangeDatabaseVersion();
@@ -1336,7 +1368,7 @@ namespace PerfQA_ArcFM
 
                 pVersion = (IVersion)pWKS;
                 pVWKS = (IVersionedWorkspace)Workspace;
-                Logger.WriteLine("Verion:" + pMMSessVer.get_Name());
+                DebugWrite("  Version:" + pMMSessVer.get_Name());
                 pNewVersion = pVWKS.FindVersion(pMMSessVer.get_Name());
 
                 pCV = new ChangeDatabaseVersion();
@@ -1352,7 +1384,7 @@ namespace PerfQA_ArcFM
             }
             catch (Exception EX)
             {
-                this.Logger.WriteLine("TraceDownStream Failed: " + EX.Message);
+                this.Logger.WriteLine("Open_ArcFM_Session Failed: " + EX.Message);
                 return false;
             }
         }
@@ -1420,7 +1452,7 @@ namespace PerfQA_ArcFM
                 pPoint.Y = System.Convert.ToDouble(sY);
                 dScale = 1.0 / System.Convert.ToDouble(sScale);
                 // Convert Scale to double
-                Logger.WriteLine("Scale:" + dScale.ToString() + " X:" + pPoint.X.ToString() + " Y:" + pPoint.Y.ToString());
+                DebugWrite("  Scale:" + dScale.ToString() + " X:" + pPoint.X.ToString() + " Y:" + pPoint.Y.ToString());
                 SW1.Reset();
                 SW1.Start();
                 pMMMapUtils.ZoomTo(pPoint, pMXDoc.ActiveView, dScale);
@@ -1489,7 +1521,7 @@ namespace PerfQA_ArcFM
                 pMMSession = pmmSessionMangerExt.CreateSession();
                 pMMSessVer = (IMMSessionVersion)pMMSession;
 
-                this.Logger.WriteLine("Session:" + pMMSessVer.get_Name());
+                DebugWrite("  Session:" + pMMSessVer.get_Name());
                 pVersion = (IVersion)pWKS;
                 pOldPS = pWKS.ConnectionProperties;
                 pOldPropNames = new object[1];
@@ -1767,7 +1799,7 @@ namespace PerfQA_ArcFM
             long QueryTime;
             long FetchTime;
             int ReturnCount;
-            this.Logger.WriteLine("Query by Attribute");
+            DebugWrite("  Query by Attribute");
             try
             {
                 SW1.Reset();
@@ -1943,7 +1975,7 @@ namespace PerfQA_ArcFM
             IFeatureClass pFC;
             IEnvelope pEnv;
 
-            this.Logger.WriteLine("Spatial Select by Attribute");
+            DebugWrite("Starting SpatialSelect");
             try
             {
                 try
@@ -1998,7 +2030,7 @@ namespace PerfQA_ArcFM
             IMxDocument pDoc;
             IMap pMap;
 
-            this.Logger.WriteLine("Map Spatial Select");
+            DebugWrite("Starting MapSpatialSelect");
             try
             {
                 try
@@ -2069,11 +2101,11 @@ namespace PerfQA_ArcFM
                     //pPoly = (IEnvelope)pGeomBag;
                     if (pPoly == null)
                     {
-                        this.Logger.WriteLine("No Geometry");
+                        DebugWrite("  No Geometry");
                     }
                     else
                     {
-                        this.Logger.WriteLine("X1:" + pPoly.XMin + " Y1:" + pPoly.YMin + " X2:" + pPoly.XMax + " Y2:" + pPoly.YMax);
+                        DebugWrite("  X1:" + pPoly.XMin + " Y1:" + pPoly.YMin + " X2:" + pPoly.XMax + " Y2:" + pPoly.YMax);
                         if (pPoly.XMin == pPoly.XMax)
                         {
                             pPoly.Expand(1000, 1000,false);
@@ -2148,6 +2180,7 @@ namespace PerfQA_ArcFM
             IWorkspaceEdit pWKSEdit;
             string[] sUpdateArray;
             bool bAborted;
+            DebugWrite("Starting UpdateStringAttribute");
             try
             {
                 sUpdateArray = GetParameters(sUpdates);
@@ -2175,13 +2208,13 @@ namespace PerfQA_ArcFM
                             try
                             {
                                 pCursor = pTable.Search(pQF, false);
-                                Logger.WriteLine("Got Cursor");
+                                DebugWrite("  Got Cursor");
                                 pRow = pCursor.NextRow();
-                                Logger.WriteLine("Got Row");
+                                DebugWrite("  Got Row");
                                 //pWKSEdit.StartEditOperation();
                                 bAborted = false;
                                 pEditor.StartOperation();
-                                Logger.WriteLine("Started Editor");
+                                DebugWrite("  Started EditOperation");
                                 int iPos;
                                 while (pRow != null)
                                 {
@@ -2191,7 +2224,7 @@ namespace PerfQA_ArcFM
                                         int iFld = pRow.Fields.FindField(sUpdateArray[iPos]);
                                         if (iFld > 0)
                                         {
-                                            Logger.WriteLine("Field:" + iFld);
+                                            DebugWrite("  Field:" + iFld);
                                             try
                                             {
                                                 pRow.set_Value(iFld, sUpdateArray[iPos + 1]);
@@ -2204,7 +2237,7 @@ namespace PerfQA_ArcFM
                                         }
                                         else
                                         {
-                                            Logger.WriteLine("Field not found:" + sUpdateArray[i]);
+                                            Logger.WriteLine("UpdateStringAttribute :: Field not found:" + sUpdateArray[i]);
                                         }
                                         iPos = iPos + 2;
                                     }
@@ -2304,18 +2337,18 @@ namespace PerfQA_ArcFM
                     }
                     else
                     {
-                        Logger.WriteLine("Invalid Type");
+                        Logger.WriteLine("CommandClick :: Invalid Type");
                     }
                 }
                 else
                 {
-                    Logger.WriteLine("Not found");
+                    Logger.WriteLine("CommandClick :: Command Not found");
                 }
                 return bReturn;
             }
             catch (Exception EX)
             {
-                this.Logger.WriteLine("CommandButton error:" + EX.Message);
+                this.Logger.WriteLine("CommandClick error:" + EX.Message);
                 return false;
             }
         }
@@ -2494,7 +2527,7 @@ namespace PerfQA_ArcFM
                 pPoint.Y = System.Convert.ToDouble(sY);
                 dScale = 1.0 / System.Convert.ToDouble(sScale);
                 // Convert Scale to double
-                Logger.WriteLine("Scale:" + dScale.ToString() + " X:" + pPoint.X.ToString() + " Y:" + pPoint.Y.ToString());
+                DebugWrite("  Scale:" + dScale.ToString() + " X:" + pPoint.X.ToString() + " Y:" + pPoint.Y.ToString());
 
                 pMXDoc = GetDoc();
                 pEnv = pMXDoc.ActiveView.FullExtent;
@@ -2658,7 +2691,7 @@ namespace PerfQA_ArcFM
             }
         }
 
-        private bool RemoveFromSelecdtion(string sLayerName, string sOID)
+        private bool RemoveFromSelection(string sLayerName, string sOID)
         {
             IMxDocument pMXDoc;
             IEnumLayer pLayers;
@@ -3035,7 +3068,7 @@ namespace PerfQA_ArcFM
             }
         }
 
-        private bool ExecuteNetworkTrace(string sTraceName, string sDoTrace)
+        private bool ExecuteNetworkTrace(string sTraceName)
         {
             ITraceFlowSolverGEN pTraceFlowSolver;
             INetworkAnalysisExt pNetworkAnalysisExt;
@@ -3074,14 +3107,14 @@ namespace PerfQA_ArcFM
                     if (pNetworkAnalysisExt.Network[i].OrphanJunctionFeatureClass.FeatureClassID == m_pGN.OrphanJunctionFeatureClass.FeatureClassID)
                     {
                         pNetworkAnalysisExt.CurrentNetwork = pNetworkAnalysisExt.Network[i];
-                        Logger.WriteLine("Network Set");
+                        DebugWrite("Network Set");
                         bFound = true;
                         break;
                     }
                 }
                 if (bFound != true)
                 {
-                    Logger.WriteLine("No Network Found");
+                    Logger.WriteLine("ExecuteNetworkTrace :: No Network Found");
                     return false;
                 }
                 pTraceTasks = (ITraceTasks)pNetworkAnalysisExt;
@@ -3094,14 +3127,14 @@ namespace PerfQA_ArcFM
                     {
                         pTraceTasks.CurrentTask = pTraceTasks.Task[i];
                         pTraceTask = pTraceTasks.Task[i];
-                        Logger.WriteLine("Task Set");
+                        DebugWrite("Task Set");
                         bFound = true;
                         break;
                     }
                 }
                 if (bFound != true)
                 {
-                    Logger.WriteLine("No Task Set");
+                    Logger.WriteLine("ExecuteNetworkTrace :: Trace Task not found");
                     return false;
                 }
 
@@ -3111,12 +3144,12 @@ namespace PerfQA_ArcFM
                 {
                     if (pTraceTask.EnableSolve)
                     {
-                        Logger.WriteLine("Execute");
+                        DebugWrite("  Execute");
                         //pMXDoc.ActiveView.Refresh();
                         CommandClick("{D6CD856D-BF8F-11D2-BABE-00C04FA33C20}");
-                        Logger.WriteLine("GetResults");
+                        DebugWrite("  GetResults");
                         INetworkAnalysisExtResults pNAResults = (INetworkAnalysisExtResults)pNetworkAnalysisExt;
-                        Logger.WriteLine("Found:" + pNAResults.ResultFeatureCount);
+                        DebugWrite("  Found:" + pNAResults.ResultFeatureCount);
                     }
                 }
                 //}
@@ -3146,13 +3179,13 @@ namespace PerfQA_ArcFM
                 for (int i = 0; i < lstArgs.GetUpperBound(0); i++)
                 {
                     lstArgs[i] = lstArgs[i].Trim();
-                    //this.Logger.WriteLine("Arg:[" + i + "]" + lstArgs[i]);
+                    DebugWrite("Arg:[" + i + "]" + lstArgs[i]);
                 }
             }
             else
             {
                 lstArgs = new string[2] { "", "" };
-                this.Logger.WriteLine("No Parameters");
+                this.Logger.WriteLine("GetParameters :: No Parameters");
             }
             return lstArgs;
         }
@@ -3264,12 +3297,12 @@ namespace PerfQA_ArcFM
                                 }
                                 catch (Exception EX2)
                                 {
-                                    Logger.WriteLine("Error in Selection:" + EX2.Source);
+                                    Logger.WriteLine("Error in AddSelection:" + EX2.Source);
                                 }
                             }
                             else
                             {
-                                Logger.WriteLine("No Selection Object found");
+                                Logger.WriteLine("AddSelection :: No Selection Object found");
                             }
                         }
                     }
@@ -3361,7 +3394,7 @@ namespace PerfQA_ArcFM
                             {
                                 this.Logger.WriteLine("ArcFMTrace Error" + EX2.Message + " " + EX2.StackTrace);
 
-                                Logger.WriteLine("Error adding Breaker:" + pFeat.OID);
+                                //Logger.WriteLine("Error adding Breaker:" + pFeat.OID);
                             }
                         }
 
@@ -3372,8 +3405,8 @@ namespace PerfQA_ArcFM
                                 iEID, pElemType, Miner.Interop.SetOfPhases.abc, Miner.Interop.mmDirectionInfo.establishBySourceSearch, 0,
                                 ESRI.ArcGIS.Geodatabase.esriElementType.esriETEdge, iJunctionBarriers,
                                 iEdgeBarriers, false, out pJunctions, out pEdges);
-                            Logger.WriteLine("Edges Found:" + pEdges.Count);
-                            Logger.WriteLine("Junctions Found:" + pJunctions.Count);
+                            DebugWrite("  ArcFMTrace :: Edges Found:" + pEdges.Count);
+                            DebugWrite("  ArcFMTrace :: Junctions Found:" + pJunctions.Count);
                             iSelectionCount = pEdges.Count + pJunctions.Count;
                             if (sSelect.ToUpper() == "TRUE")
                             {
@@ -3399,7 +3432,7 @@ namespace PerfQA_ArcFM
                                 else
                                 {
                                     iSelectionCount = pFeedPaths.Count;
-                                    Logger.WriteLine("Paths:" + pFeedPaths.Count);
+                                    DebugWrite("  ArcFMTrace :: Paths:" + pFeedPaths.Count);
                                     IMMFeedPathEx pFeedPath;
                                     IMMEnumPathElement pEPathElem;
 
@@ -3412,7 +3445,7 @@ namespace PerfQA_ArcFM
                                     }
                                 }
 
-                                Logger.WriteLine("Count:" + iSelectionCount);
+                                DebugWrite("  ArcFMTrace :: Count:" + iSelectionCount);
                                 if (sSelect.ToUpper() == "TRUE")
                                 {
                                     //pFeedPath
@@ -3425,7 +3458,7 @@ namespace PerfQA_ArcFM
                             }
                             catch (Exception EX2)
                             {
-                                this.Logger.WriteLine("TraceUpStream Failed: " + EX2.Message + ": " + EX2.StackTrace);
+                                this.Logger.WriteLine("Error in ArcFMTrace :: " + EX2.Message + ": " + EX2.StackTrace);
                                 return false;
                             }
                         }
@@ -3458,7 +3491,7 @@ namespace PerfQA_ArcFM
                                 {
                                     iSelectionCount = iSelectionCount + pEdgesEID.Count;
                                 }
-                                Logger.WriteLine("Found:" + iSelectionCount);
+                                DebugWrite("  ArcFMTrace :: Found:" + iSelectionCount);
                                 UID uid = new UIDClass();
                                 uid.Value = "esriNetworkAnalystUI.NetworkAnalystExtension"; //ESRI Network Analyst extension
                                 //IExtension ext = extMgr.FindExtension(uid);
@@ -3490,18 +3523,18 @@ namespace PerfQA_ArcFM
                                         }
                                         else
                                         {
-                                            this.Logger.WriteLine("NetworkAnalysisResults Null");
+                                            this.Logger.WriteLine("ArcFMTrace :: NetworkAnalysisResults Null");
                                         }
                                     }
                                     else
                                     {
-                                        this.Logger.WriteLine("UtilityNetworkAnalysisExt Null");
+                                        this.Logger.WriteLine("ArcFMTrace :: UtilityNetworkAnalysisExt Null");
                                     }
                                 }
                             }
                             catch (Exception EX2)
                             {
-                                this.Logger.WriteLine("TraceIsolation Failed: " + EX2.Message + ": " + EX2.StackTrace);
+                                this.Logger.WriteLine("Exception in ArcFMTrace :: " + EX2.Message + ": " + EX2.StackTrace);
                                 return false;
                             }
                         }
@@ -3565,11 +3598,11 @@ namespace PerfQA_ArcFM
 
                 ICnt = 0;
                 pMaps = pMxDoc.Maps;
-                //this.Logger.WriteLine("Maps:" + pMaps.Count);
+                DebugWrite("  SwizzleDatasets :: Maps:" + pMaps.Count);
                 pMapAdmin = (IMapAdmin)pMxDoc.FocusMap;
                 for (int iCurrMap = 0; iCurrMap < pMaps.Count; iCurrMap++)
                 {
-                    //this.Logger.WriteLine("Map:" + iCurrMap);
+                    DebugWrite("    Map:" + iCurrMap);
                     pMap = (IMap)pMaps.get_Item(iCurrMap);
                     if (pMap.LayerCount > 0)
                     {
@@ -3619,7 +3652,7 @@ namespace PerfQA_ArcFM
                 //pMapAdmin.FireChangeFeatureClass (pOldVersion, pNewVersion);
                 pMapAdmin.FireChangeVersion(pOldVersion, pNewVersion);
                 pNewVersion.RefreshVersion();
-                this.Logger.WriteLine("Changed Objects:" + ICnt);
+                DebugWrite("  SwizzleDatasets :: Changed Objects:" + ICnt);
             }
             catch (Exception EX)
             {
@@ -3744,7 +3777,7 @@ namespace PerfQA_ArcFM
             {
                 SW1.Reset();
                 SW1.Start();
-                Logger.WriteLine(sCommand);
+                DebugWrite(sCommand);
                 Workspace.ExecuteSQL(sCommand);
 
                 SW1.Stop();
@@ -3819,7 +3852,7 @@ namespace PerfQA_ArcFM
                     }
                     pLayer = pLayers.Next();
                 }
-                Logger.WriteLine("Layer not found");
+                Logger.WriteLine("Error in EditWorkspace :: Layer not found");
             }
             catch
             {
@@ -3860,7 +3893,7 @@ namespace PerfQA_ArcFM
                         return false;
                     }
                 }
-                this.Logger.WriteLine("Workspace Name:" + pVer.VersionName);
+                DebugWrite("StartEditor :: Workspace Name:" + pVer.VersionName);
                 if (pEditor != null)
                 {
                     if (pEditor.EditState != esriEditState.esriStateEditing)
@@ -3872,12 +3905,12 @@ namespace PerfQA_ArcFM
                     }
                     else
                     {
-                        this.Logger.WriteLine("Already Editing");
+                        this.Logger.WriteLine("StartEditor :: Already Editing");
                     }
                 }
                 else
                 {
-                    this.Logger.WriteLine("No Editor");
+                    this.Logger.WriteLine("StartEditor :: No Editor");
                 }
                 return true;
             }
@@ -3918,13 +3951,13 @@ namespace PerfQA_ArcFM
                     }
                     else
                     {
-                        Logger.WriteLine("Not Edidting");
+                        Logger.WriteLine("StopEditing :: Not Editing");
                         return false;
                     }
                 }
                 else
                 {
-                    Logger.WriteLine("No Editor");
+                    Logger.WriteLine("StopEditing :: No Editor");
                     return false;
                 }
             }
@@ -3951,21 +3984,21 @@ namespace PerfQA_ArcFM
                 SW1.Reset();
                 SW1.Start();
                 pMXDoc = GetDoc();
-                Logger.WriteLine("Get Points");
+                DebugWrite("  CreateLineFeature :: Get Points");
                 pPts = GetPoints(sPoints, pMXDoc.FocusMap.SpatialReference);
                 if (pPts != null)
                 {
-                    Logger.WriteLine("at least 2 points");
+                    DebugWrite("  CreateLineFeature :: Found at least 2 points");
                     if (pPts.GetUpperBound(0) > 0)
                     {
-                        Logger.WriteLine("setup vars");
+                        DebugWrite("  CreateLineFeature :: GetVars");
                         sVar = GetVars(sVars);
                         pGeoBrg = new GeometryEnvironment() as IGeometryBridge2;
                         pPointColl = new PolylineClass();
                         pGeoBrg.AddPoints(pPointColl, pPts);
                         if (pEditor != null)
                         {
-                            Logger.WriteLine("Open Class");
+                            DebugWrite("  CreateLineFeature :: Open Class");
                             pFWKS = (IFeatureWorkspace)pEditor.EditWorkspace;
                             pFC = pFWKS.OpenFeatureClass(sClassName);
                             if (pFC != null)
@@ -3980,12 +4013,12 @@ namespace PerfQA_ArcFM
                             }
                             else
                             {
-                                Logger.WriteLine("Failed to open class:" + sClassName);
+                                Logger.WriteLine("CreateLineFeature :: Failed to open class:" + sClassName);
                             }
                         }
                         else
                         {
-                            Logger.WriteLine("Editor not found");
+                            Logger.WriteLine("CreateLineFeature :: Editor not found");
                         }
                         SW1.Stop();
                         RecordActionTime("CreateLINEFeature: " , SW1.ElapsedMilliseconds);
@@ -3993,24 +4026,24 @@ namespace PerfQA_ArcFM
                     }
                     else
                     {
-                        Logger.WriteLine("Empty Geometry");
+                        Logger.WriteLine("CreateLineFeature :: Empty Geometry");
                         return false;
                     }
                 }
                 else
                 {
-                    Logger.WriteLine("Null Geometry");
+                    Logger.WriteLine("CreateLineFeature :: Null Geometry");
                     return false;
                 }
             }
             catch (COMException ComEX)
             {
-                Logger.WriteLine("Error in CreateLINEFeature: " + ComEX.ErrorCode + " :" + ComEX.Message + ":" + ComEX.StackTrace);
+                Logger.WriteLine("Error in CreateLineFeature: " + ComEX.ErrorCode + " :" + ComEX.Message + ":" + ComEX.StackTrace);
                 return false;
             }
             catch (Exception EX)
             {
-                Logger.WriteLine("Error in CreateLINEFeature: " + EX.Message + ":" + EX.StackTrace);
+                Logger.WriteLine("Error in CreateLineFeature: " + EX.Message + ":" + EX.StackTrace);
                 return false;
             }
         }
@@ -4056,7 +4089,7 @@ namespace PerfQA_ArcFM
                         }
                         else
                         {
-                            Logger.WriteLine("Editor not found");
+                            Logger.WriteLine("CreatePointFeature :: Editor not found");
                         }
                     }
                     SW1.Stop();
@@ -4065,7 +4098,7 @@ namespace PerfQA_ArcFM
                 }
                 else
                 {
-                    Logger.WriteLine("Null Geometry");
+                    Logger.WriteLine("CreatePointFeature :: Null Geometry");
                     return false;
                 }
             }
@@ -4075,6 +4108,262 @@ namespace PerfQA_ArcFM
                 return false;
             }
         }
+
+        private bool CreateRelatedRecord(string sOriginClassName, string ObjectID, string sRelationshipName, string sVars)
+        {
+            DebugWrite("Starting CreateRelatedRecord");
+
+            IMxDocument pMXDoc;
+            IFeatureClass pFC;
+            IFeatureWorkspace pFWKS;
+            IFeature pFeat;
+            IRow pRelRow;
+            IRelationshipClass pRelClass;
+            IObjectClass pRelObjClass;
+            string[,] sVar;
+
+
+            try
+            {
+                SW1.Reset();
+                SW1.Start();
+                pMXDoc = GetDoc();
+
+                sVar = GetVars(sVars);
+
+                // Get our FeatureWorkspace
+                DebugWrite("  CreateRelatedRecord :: Getting Feature Workspace");
+                pFWKS = (IFeatureWorkspace)Workspace;
+
+                // Using the FeatureWorkspace, get the feature class
+                DebugWrite("  CreateRelatedRecord :: Getting Feature Class");
+
+                pFC = pFWKS.OpenFeatureClass(sOriginClassName);
+
+                // Using the FeatureWorkspace, get the relationship class
+                DebugWrite("  CreateRelatedRecord :: Getting Relationship Class");
+                pRelClass = pFWKS.OpenRelationshipClass(sRelationshipName);
+
+                if ((pFC != null) && (pRelClass != null))
+                {
+                    DebugWrite("  CreateRelatedRecord :: Getting DestinationClass");
+                    pRelObjClass = pRelClass.DestinationClass;
+
+                    IQueryFilter pQF = new QueryFilter();
+                    pQF.WhereClause = pFC.OIDFieldName.ToString() + " = " + Convert.ToString(ObjectID);
+
+                    IFeatureCursor pFCur = pFC.Search(pQF, false);
+                    DebugWrite("  CreateRelatedRecord :: Getting Source Feature");
+                    pFeat = pFCur.NextFeature();
+
+                    if (pFeat != null)
+                    {
+                        if (pEditor != null)
+                        {
+                            DebugWrite("  CreateRelatedRecord :: Starting Edit Operation");
+
+                            try
+                            {
+
+                                pEditor.StartOperation();
+                                ITable pRelTab = pRelObjClass as ITable;
+
+                                DebugWrite("  CreateRelatedRecord :: Creating related row");
+                                pRelRow = pRelTab.CreateRow();
+
+                                SetFields((IObject)pRelRow, sVar);
+
+                                IObject pRelObj = (IObject)pRelRow;
+
+                                DebugWrite("  CreateRelatedRecord :: Creating relationship");
+                                pRelClass.CreateRelationship(pFeat, (IObject)pRelRow);
+
+                                DebugWrite("  CreateRelatedRecord :: Storing Related Row");
+                                pRelRow.Store();
+
+                                DebugWrite("  CreateRelatedRecord :: Storing Feature");
+                                pFeat.Store();
+
+                                DebugWrite("   CreateRelatedRecord :: Stopping Edit Operation");
+                                pEditor.StopOperation("CreateRelatedRecord");
+                            }
+                            catch (Exception x)
+                            {
+                                Logger.WriteLine("Error in CreateRelatedRecord: " + x.Message + ":" + x.StackTrace);
+                                pEditor.AbortOperation();
+                            }
+                        }
+                        else
+                        {
+                            Logger.WriteLine("Editor not found. ");
+                        }
+                    }
+                    else
+                    {
+                        Logger.WriteLine("Source feature not found.");
+                        Logger.WriteLine(pQF.WhereClause);
+                    }
+                }
+
+                else
+                {
+                    Logger.WriteLine("Source Feature Class or Relationship Class not found.");
+                    Logger.WriteLine(sOriginClassName + " found:  " + (pFC != null).ToString());
+                    Logger.WriteLine(sRelationshipName + " found: " + (pRelClass != null).ToString());
+                }
+
+                SW1.Stop();
+                RecordActionTime("CreateRelatedRecord: ", SW1.ElapsedMilliseconds);
+                return true;
+            }
+            catch (Exception EX)
+            {
+                Logger.WriteLine("Error in CreateRelatedRecord: " + EX.Message + ":" + EX.StackTrace);
+                return false;
+            }
+        }
+
+
+
+        private bool CreateRelatedPoint(string sOriginClassName, string ObjectID, string sRelationshipName, string sVars, string sPoints)
+        {
+            DebugWrite("Starting CreateRelatedPoint");
+
+            IMxDocument pMXDoc;
+            IFeatureClass pFC;
+            IFeatureWorkspace pFWKS;
+            IFeature pFeat;
+            IRow pRelRow;
+            IRelationshipClass pRelClass;
+            IObjectClass pRelObjClass;
+            IPoint[] pPts = null;
+            string[,] sVar;
+
+
+            try
+            {
+                SW1.Reset();
+                SW1.Start();
+                pMXDoc = GetDoc();
+                if (sPoints != null)
+                {
+                    pPts = GetPoints(sPoints, pMXDoc.FocusMap.SpatialReference);
+                }
+
+                sVar = GetVars(sVars);
+
+                // Get our FeatureWorkspace
+                DebugWrite("  CreateRelatedPoint :: Getting Feature Workspace");
+                pFWKS = (IFeatureWorkspace)Workspace;
+
+                // Using the FeatureWorkspace, get the feature class
+                DebugWrite("  CreateRelatedPoint :: Getting Feature Class");
+
+                pFC = pFWKS.OpenFeatureClass(sOriginClassName);
+
+                // Using the FeatureWorkspace, get the relationship class
+                DebugWrite("  CreateRelatedPoint :: Getting Relationship Class");
+                pRelClass = pFWKS.OpenRelationshipClass(sRelationshipName);
+
+                if ((pFC != null) && (pRelClass != null))
+                {
+                    DebugWrite("  CreateRelatedPoint :: Getting DestinationClass");
+                    pRelObjClass = pRelClass.DestinationClass;
+
+                    IQueryFilter pQF = new QueryFilter();
+                    pQF.WhereClause = pFC.OIDFieldName.ToString() + " = " + Convert.ToString(ObjectID);
+
+                    IFeatureCursor pFCur = pFC.Search(pQF, false);
+                    DebugWrite("  CreateRelatedPoint :: Getting Source Feature");
+                    pFeat = pFCur.NextFeature();
+
+                    if (pFeat != null)
+                    {
+                        if (pEditor != null)
+                        {
+                            DebugWrite("  CreateRelatedPoint :: Starting Edit Operation");
+
+                            try
+                            {
+
+                                pEditor.StartOperation();
+                                ITable pRelTab = pRelObjClass as ITable;
+
+                                DebugWrite("  CreateRelatedPoint :: Creating related row");
+                                pRelRow = pRelTab.CreateRow();
+
+                                SetFields((IObject)pRelRow, sVar);
+
+                                IObject pRelObj = (IObject)pRelRow;
+                                if (pRelObj is IFeature)
+                                {
+                                    DebugWrite("    Found a feature...");
+                                    IFeature pRelFeat = (IFeature)pRelRow;
+
+                                    if (pPts.Length == 1)
+                                    {
+                                        IPoint pPt = new Point();
+                                        pPt.SpatialReference = pMXDoc.FocusMap.SpatialReference;
+                                        double dX = Convert.ToDouble(pPts[0].X);
+                                        double dY = Convert.ToDouble(pPts[0].Y);
+                                        pPt.PutCoords(dX, dY);
+                                        pRelFeat.Shape = pPt;
+                                    }
+
+
+                                }
+
+
+
+                                DebugWrite("  CreateRelatedPoint :: Creating relationship");
+                                pRelClass.CreateRelationship(pFeat, (IObject)pRelRow);
+
+                                DebugWrite("  CreateRelatedPoint :: Storing Related Row");
+                                pRelRow.Store();
+
+                                DebugWrite("  CreateRelatedPoint :: Storing Feature");
+                                pFeat.Store();
+
+                                DebugWrite("   CreateRelatedPoint :: Stopping Edit Operation");
+                                pEditor.StopOperation("CreateRelatedPoint");
+                            }
+                            catch (Exception x)
+                            {
+                                Logger.WriteLine("Error in CreateRelatedPoint: " + x.Message + ":" + x.StackTrace);
+                                pEditor.AbortOperation();
+                            }
+                        }
+                        else
+                        {
+                            Logger.WriteLine("CreateRelatedPoint ::Editor not found. ");
+                        }
+                    }
+                    else
+                    {
+                        Logger.WriteLine("CreateRelatedPoint :: Source feature not found.");
+                        Logger.WriteLine(pQF.WhereClause);
+                    }
+                }
+
+                else
+                {
+                    Logger.WriteLine("CreateRelatedPoint :: Source Feature Class or Relationship Class not found.");
+                    Logger.WriteLine(sOriginClassName + " found:  " + (pFC != null).ToString());
+                    Logger.WriteLine(sRelationshipName + " found: " + (pRelClass != null).ToString());
+                }
+
+                SW1.Stop();
+                RecordActionTime("CreateRelatedPoint: ", SW1.ElapsedMilliseconds);
+                return true;
+            }
+            catch (Exception EX)
+            {
+                Logger.WriteLine("Error in CreateRelatedPoint: " + EX.Message + ":" + EX.StackTrace);
+                return false;
+            }
+        }
+
+
 
         private bool CREATEPOLYGONFEATURE(string sClassName, string sPoints, string sVars)
         {
@@ -4088,6 +4377,7 @@ namespace PerfQA_ArcFM
             IPointCollection4 pPointColl;
             string[,] sVar;
 
+            DebugWrite("Starting CreatePolygonFeature");
             try
             {
                 SW1.Reset();
@@ -4114,12 +4404,12 @@ namespace PerfQA_ArcFM
                                 pFeat.Shape = (IGeometry)pPolygon;
                                 SetFields(pFeat, sVar);
                                 pFeat.Store();
-                                Logger.WriteLine("OID:" + pFeat.OID);
+                                DebugWrite("OID:" + pFeat.OID);
                                 pEditor.StopOperation("Create Polygon");
                             }
                             else
                             {
-                                Logger.WriteLine("Editor not found");
+                                DebugWrite("  Editor not found");
                             }
                         }
                         SW1.Stop();
@@ -4128,13 +4418,13 @@ namespace PerfQA_ArcFM
                     }
                     else
                     {
-                        Logger.WriteLine("Missing Geometry");
+                        DebugWrite("  Missing Geometry");
                         return false;
                     }
                 }
                 else
                 {
-                    Logger.WriteLine("Null Geometry");
+                    DebugWrite("  Null Geometry");
                     return false;
                 }
             }
@@ -4175,7 +4465,7 @@ namespace PerfQA_ArcFM
                 }
                 else
                 {
-                    Logger.WriteLine("No Editor");
+                    Logger.WriteLine("DeleteSelected :: No Editor");
                     return false;   
                 }
             }
@@ -4632,25 +4922,25 @@ namespace PerfQA_ArcFM
             {
                 case "UP":
                     pEnv.Offset(0, dDistance);
-                    Logger.WriteLine(string.Format("Pan Up {0}", dDistance));
+                    DebugWrite(string.Format("Pan Up {0}", dDistance));
                     break;
                 case "DOWN":
                     pEnv.Offset(0, dDistance * -1);
-                    Logger.WriteLine(string.Format("Pan Down {0}", dDistance));
+                    DebugWrite(string.Format("Pan Down {0}", dDistance));
                     break;
                 case "LEFT":
                     pEnv.Offset(dDistance * -1, 0);
-                    Logger.WriteLine(string.Format("Pan Left {0}", dDistance));
+                    DebugWrite(string.Format("Pan Left {0}", dDistance));
                     break;
                 case "RIGHT":
                     pEnv.Offset(dDistance, 0);
-                    Logger.WriteLine(string.Format("Pan Right {0}",dDistance));
+                    DebugWrite(string.Format("Pan Right {0}",dDistance));
                     break;
             };
             
             pDoc.ActiveView.Extent = pEnv;
             pDoc.ActiveView.Refresh();
-            Logger.WriteLine(string.Format("ActiveView extent set to: [XMin={0}, YMin={1}, XMax={2}, YMax={3}]", pEnv.XMin,pEnv.YMin,pEnv.XMax,pEnv.YMax));
+            DebugWrite(string.Format("ActiveView extent set to: [XMin={0}, YMin={1}, XMax={2}, YMax={3}]", pEnv.XMin,pEnv.YMin,pEnv.XMax,pEnv.YMax));
             SW1.Stop();
             RecordActionTime("PAN " + sDirection, SW1.ElapsedMilliseconds);
 
@@ -4670,8 +4960,8 @@ namespace PerfQA_ArcFM
                 iSleepTime = (((dtWake.Hour - dtNow.Hour) * 60) * 60) * 1000;
                 iSleepTime = iSleepTime + (((dtWake.Minute - dtNow.Minute) * 60) * 1000);
                 iSleepTime = iSleepTime + ((dtWake.Second - dtNow.Second) * 1000);
-                Logger.WriteLine("Wake At:" + dtWake);
-                Logger.WriteLine("Milliseconds:" + iSleepTime);
+                DebugWrite("Wake At:" + dtWake);
+                DebugWrite("Milliseconds:" + iSleepTime);
                 if (iSleepTime > (60 * 60 * 1000))
                 {
                     Logger.WriteLine("Sleep time exceed 1 hour, assuming it is an error");
@@ -4753,7 +5043,7 @@ namespace PerfQA_ArcFM
                 //set the export filename (which is the nameroot + the appropriate file extension)
                 UID = System.Guid.NewGuid();
                 docExport.ExportFileName = sFileName + "_" + UID.ToString() + ".PDF";
-                Logger.WriteLine("Export:" + docExport.ExportFileName);
+                DebugWrite("Export:" + docExport.ExportFileName);
 
                 //Output Image Quality of the export.  The value here will only be used if the export
                 // object is a format that allows setting of Output Image Quality, i.e. a vector exporter.
@@ -4803,13 +5093,13 @@ namespace PerfQA_ArcFM
                 lstArgs = sInArgs.Split(';');
                 for (int i = 0; i < lstArgs.Count(); i++)
                 {
-                    this.Logger.WriteLine("Arg:[" + i + "]" + lstArgs[i]);
+                    DebugWrite("Arg:[" + i + "]" + lstArgs[i]);
                 }
             }
             else
             {
                 lstArgs = new string[2] { "", "" };
-                this.Logger.WriteLine("No Parameters");
+                DebugWrite("No Parameters");
             }
             return lstArgs;
         }
@@ -4834,7 +5124,7 @@ namespace PerfQA_ArcFM
             return sResults;
         }
 
-        private void SetFields(IFeature pFeat, string[,] sVar)
+        private void SetFields(IObject pFeat, string[,] sVar)
         {
             IField pField;
             int iValue;
@@ -4843,7 +5133,7 @@ namespace PerfQA_ArcFM
 
             for (int i = 0; i <= sVar.GetUpperBound(0); i++)
             {
-                Logger.WriteLine("Field:" + sVar[i, 0]);
+                DebugWrite("Field:" + sVar[i, 0]);
                 sFieldName = sVar[i, 0].ToUpper();
                 sFieldName = sFieldName.Trim();
                 int iFld = pFeat.Fields.FindField(sFieldName);
@@ -4888,7 +5178,7 @@ namespace PerfQA_ArcFM
             sNumbers = sInput.Split(',');
             iStrCnt = sNumbers.GetUpperBound(0) + 1;
             iPairCnt = iStrCnt / 2;
-            Logger.WriteLine("Pairs:" + iPairCnt + "," + iStrCnt);
+            DebugWrite("Pairs:" + iPairCnt + "," + iStrCnt);
             if ((iPairCnt * 2) == iStrCnt)
             {
                 pPts = new ESRI.ArcGIS.Geometry.IPoint[iPairCnt];
@@ -4899,7 +5189,7 @@ namespace PerfQA_ArcFM
                     pPt.SpatialReference = pSR;
                     dX = Convert.ToDouble(sNumbers[iPos]);
                     dY = Convert.ToDouble(sNumbers[iPos + 1]);
-                    Logger.WriteLine("(" + i + "DX,DY:" + dX + "," + dY);
+                    DebugWrite("(" + i + "DX,DY:" + dX + "," + dY);
                     pPt.PutCoords(dX, dY);
                     pPts[i] = pPt;
                     iPos = iPos + 2;
@@ -5048,6 +5338,16 @@ namespace PerfQA_ArcFM
             {
                 Logger.WriteLine(ActionText + ":" + string.Format("{0:0.00000}",System.Convert.ToDouble( ActionMilliseconds)/1000));
             }
+        }
+
+        public void DebugWrite(string sText)
+        {
+
+            if (bDebug)
+            {
+                Logger.WriteLine(sText);
+            }
+
         }
     }
 }
